@@ -5,6 +5,8 @@ export default function Home() {
   // Fetch the products and their variants
   const products = api.example.getAll.useQuery();
 
+  const ello = api.test.hello.useQuery({ text: "World"});
+
   return (
     <>
       <Head>
@@ -29,6 +31,9 @@ export default function Home() {
               ))}
             </div>
           ))}
+        </div>
+        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
+          <p className="text-sm text-white">{ello.data ? ello.data.greeting : 'loading'}</p>
         </div>
       </main>
     </>
