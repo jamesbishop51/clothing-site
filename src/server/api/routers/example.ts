@@ -11,6 +11,10 @@ export const exampleRouter = createTRPCRouter({
       };
     }),
   getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.db.product.findMany();
+    return ctx.db.product.findMany( {
+      include: {
+        variants: true,
+      }
+    });
   }),
 });
