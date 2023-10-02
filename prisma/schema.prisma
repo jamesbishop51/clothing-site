@@ -12,22 +12,31 @@ generator client {
 }
 
 model Product {
-  id          Int       @id @default(autoincrement())
-  code        String    @unique
-  name        String
-  description String
-  price       Float
-  variants    Variant[]
+  Id          Int      @id @default(autoincrement())
+  code        String   @unique
+  Name        String
+  Description String
+  Price       Float
+  Colours     Colour[]
 }
 
-model Variant {
-  id        Int     @id @default(autoincrement())
-  size      String
-  color     String
-  stock     Int
-  image     String
-  productId Int
-  product   Product @relation(fields: [productId], references: [id])
+model Colour {
+  Id        Int     @id @default(autoincrement())
+  Name     String
+  Image     String
+  ProductId Int
+  Product   Product @relation(fields: [ProductId], references: [Id])
+  Size      Size[]
 
-  @@index([productId])
+  @@index([ProductId])
+}
+
+model Size {
+  Id       Int    @id @default(autoincrement())
+  Size     String
+  InStock  Int
+  ColourId Int
+  Colour   Colour @relation(fields: [ColourId], references: [Id])
+
+  @@index([ColourId])
 }
