@@ -17,6 +17,9 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    domains: ["drive.google.com"],
+  },
 };
 
 export default config;

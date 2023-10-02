@@ -22,8 +22,8 @@ model Product {
 
 model Colour {
   Id        Int     @id @default(autoincrement())
-  Name     String
-  Image     String
+  Name      String
+  Image     String  @default("")
   ProductId Int
   Product   Product @relation(fields: [ProductId], references: [Id])
   Size      Size[]

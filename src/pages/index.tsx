@@ -36,7 +36,7 @@ function ProductCard({ product }: { product: Product }) {
   return (
     <div key={product.Id} className="md:flex">
       <div className="md:flex-shrink-0">
-        <Image className="h-48 w-full object-cover md:w-48" src={selectedColour.Image} alt={selectedColour.Name} />
+        <Image width={ 200 } height={ 200} className="h-48 w-full object-cover md:w-48" src={selectedColour.Image} alt={selectedColour.Name} />
       </div>
       <div className="p-8">
         <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">{product.Name}</div>
@@ -78,7 +78,7 @@ export default function Home() {
   const typedProducts = products as Product[];
 
   return (
-    <div className="max-w-sm mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl m-5">
+    <div className="max-w-sm mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-3xl m-5">
       {typedProducts.map((product) => (
         <ProductCard key={product.Id} product={product} />
       ))}
