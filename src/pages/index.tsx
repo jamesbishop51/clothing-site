@@ -143,15 +143,17 @@ function CartItemCard({
   updateQuantity,
 }: {
   item: CartItem;
-  removeFromCart: Function;
-  updateQuantity: Function;
+  removeFromCart: (item: CartItem) => void;
+  updateQuantity: (item: CartItem, quantity: number) => void;
 }) {
   return (
     <div className="m-5 mx-auto max-w-sm overflow-hidden rounded-xl bg-white shadow-md md:max-w-3xl">
       <div className="p-8">
         <div className="text-sm font-semibold uppercase tracking-wide text-slate-700">
-          {item.product.Name} - {item.colour.Name} - {item.size.Size}
+          {item.product.Name}
         </div>
+        <p className="mt-2 text-gray-500">Colour: {item.colour.Name}</p>
+        <p className="mt-2 text-gray-500">Size: {item.size.Size}</p>
         <p className="mt-2 text-gray-500">
           Quantity:
           <select
@@ -185,8 +187,9 @@ function Cart({
   updateQuantity,
 }: {
   cart: CartItem[];
-  removeFromCart: Function;
-  updateQuantity: Function;
+  removeFromCart: (item: CartItem) => void;
+  updateQuantity: (item: CartItem, quantity: number) => void;
+
 }) {
   const total = cart.reduce(
     (total, item) => total + item.product.Price * item.quantity,
@@ -221,13 +224,6 @@ export default function Home() {
 
   const addToCart = (item: CartItem) => {
     setCart([...cart, item]);
-  };
-
-  const calculateTotal = () => {
-    return cart.reduce(
-      (total, item) => total + item.product.Price * item.quantity,
-      0,
-    );
   };
 
   const removeFromCart = (itemToRemove: CartItem) => {
