@@ -1,6 +1,6 @@
 import { api } from "~/utils/api";
-import Image from 'next/image'
-import { useState } from 'react';
+import Image from "next/image";
+import { useState } from "react";
 
 type Size = {
   Id: number;
@@ -26,42 +26,221 @@ type Product = {
   Colours: Colour[];
 };
 
-function ProductCard({ product }: { product: Product }) {
-  const [selectedColour, setSelectedColour] = useState(product.Colours[0]);
+interface CartItem {
+  product: Product;
+  colour: Colour;
+  size: Size;
+  quantity: number;
+}
 
-  if (!selectedColour) {
+function ProductCard({
+  product,
+  addToCart,
+}: {
+  product: Product;
+  addToCart: (item: CartItem) => void;
+}) {
+  const [selectedColour, setSelectedColour] = useState(product.Colours[0]);
+  const [selectedSize, setSelectedSize] = useState(selectedColour?.Size[0]);
+  const [selectedQuantity, setSelectedQuantity] = useState(1);
+
+  if (!selectedColour || !selectedSize) {
     return null; // or some fallback UI
   }
 
   return (
-    <div key={product.Id} className="md:flex">
-      <div className="md:flex-shrink-0">
-        <Image width={ 200 } height={ 200} className="h-48 w-full object-cover md:w-48" src={selectedColour.Image} alt={selectedColour.Name} />
-      </div>
-      <div className="p-8">
-        <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">{product.Name}</div>
-        <select value={selectedColour.Id} onChange={(e) => setSelectedColour(product.Colours.find(colour => colour.Id === Number(e.target.value)))}>
-          {product.Colours.map((colour) => (
-            <option key={colour.Id} value={colour.Id}>{colour.Name}</option>
-          ))}
-        </select>
-        <p className="mt-2 text-gray-500">{product.Description}</p>
-        {selectedColour.Size.map((size) => (
-          <button key={size.Id} className="mt-2 px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
-            {size.Size}
-          </button>
-        ))}
-      </div>
-      <div className="p-8 flex items-center justify-between">
-        <span className="text-indigo-600 font-bold">{product.Price}</span>
-        <button className="px-5 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">Add to Cart</button>
+    <div
+      key={product.Id}
+      className="m-5 mx-auto max-w-sm overflow-hidden rounded-xl bg-white shadow-md md:max-w-3xl"
+    >
+      <div key={product.Id} className="md:flex">
+        <div className="md:flex-shrink-0">
+          <Image
+            width={500}
+            height={500}
+            className="h-48 w-full object-contain md:w-48"
+            src={selectedColour.Image}
+            alt={selectedColour.Name}
+          />
+        </div>
+        <div className="p-8">
+          <div className="text-sm font-semibold uppercase tracking-wide text-slate-700">
+            {product.Name}
+          </div>
+          <div className="flex space-x-4">
+            <select
+              className="mt-2 rounded-md border border-transparent bg-slate-600 px-4 py-2 text-base font-medium text-white hover:bg-slate-700"
+              value={selectedColour.Id}
+              onChange={(e) =>
+                setSelectedColour(
+                  product.Colours.find(
+                    (colour) => colour.Id === Number(e.target.value),
+                  ),
+                )
+              }
+            >
+              {product.Colours.map((colour) => (
+                <option key={colour.Id} value={colour.Id}>
+                  {colour.Name}
+                </option>
+              ))}
+            </select>
+            <select
+              className="mt-2 rounded-md border border-transparent bg-slate-600 px-4 py-2 text-base font-medium text-white hover:bg-slate-700"
+              value={selectedSize.Id}
+              onChange={(e) =>
+                setSelectedSize(
+                  selectedColour.Size.find(
+                    (size) => size.Id === Number(e.target.value),
+                  ),
+                )
+              }
+            >
+              {selectedColour.Size.map((size) => (
+                <option key={size.Id} value={size.Id} disabled={!size.InStock}>
+                  {size.Size}
+                </option>
+              ))}
+            </select>
+            <select
+              className="mt-2 rounded-md border border-transparent bg-slate-600 px-4 py-2 text-base font-medium text-white hover:bg-slate-700"
+              value={selectedQuantity}
+              onChange={(e) => setSelectedQuantity(Number(e.target.value))}
+            >
+              {[...Array(9).keys()].map((i) => (
+                <option key={i + 1} value={i + 1}>
+                  {i + 1}
+                </option>
+              ))}
+            </select>
+            <button
+              className="mt-2 rounded-md border border-transparent bg-slate-600 px-4 py-2 text-base font-medium text-white hover:bg-slate-700"
+              onClick={() =>
+                addToCart({
+                  product: product,
+                  colour: selectedColour,
+                  size: selectedSize,
+                  quantity: selectedQuantity,
+                })
+              }
+            >
+              Add to Cart
+            </button>
+          </div>
+          <p className="mt-2 text-gray-500">{product.Description}</p>
+        </div>
+        <div className="flex items-center justify-between p-8">
+          <span className="font-bold text-slate-700">{product.Price}</span>
+        </div>
       </div>
     </div>
-  )
+  );
+}
+
+function CartItemCard({
+  item,
+  removeFromCart,
+  updateQuantity,
+}: {
+  item: CartItem;
+  removeFromCart: Function;
+  updateQuantity: Function;
+}) {
+  return (
+    <div className="m-5 mx-auto max-w-sm overflow-hidden rounded-xl bg-white shadow-md md:max-w-3xl">
+      <div className="p-8">
+        <div className="text-sm font-semibold uppercase tracking-wide text-slate-700">
+          {item.product.Name} - {item.colour.Name} - {item.size.Size}
+        </div>
+        <p className="mt-2 text-gray-500">
+          Quantity:
+          <select
+            value={item.quantity}
+            onChange={(e) => updateQuantity(item, Number(e.target.value))}
+          >
+            {[...Array(9).keys()].map((i) => (
+              <option key={i + 1} value={i + 1}>
+                {i + 1}
+              </option>
+            ))}
+          </select>
+        </p>
+        <p className="mt-2 text-gray-500">
+          Price: {item.product.Price * item.quantity}
+        </p>
+        <button
+          className="mt-2 rounded-md border border-transparent bg-slate-600 px-4 py-2 text-base font-medium text-white hover:bg-slate-700"
+          onClick={() => removeFromCart(item)}
+        >
+          Remove from Cart
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function Cart({
+  cart,
+  removeFromCart,
+  updateQuantity,
+}: {
+  cart: CartItem[];
+  removeFromCart: Function;
+  updateQuantity: Function;
+}) {
+  const total = cart.reduce(
+    (total, item) => total + item.product.Price * item.quantity,
+    0,
+  );
+
+  return (
+    <div className="m-5 mx-auto max-w-sm overflow-hidden rounded-xl bg-white shadow-md md:max-w-3xl">
+      <div className="p-8">
+        <div className="text-lg font-bold uppercase tracking-wide text-slate-700">
+          Cart
+        </div>
+        {cart.map((item, index) => (
+          <CartItemCard
+            key={index}
+            item={item}
+            removeFromCart={removeFromCart}
+            updateQuantity={updateQuantity}
+          />
+        ))}
+        <div className="text-lg font-bold uppercase tracking-wide text-slate-700">
+          Total: {total}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function Home() {
   const { data: products, error } = api.example.getAll.useQuery();
+  const [cart, setCart] = useState<CartItem[]>([]);
+
+  const addToCart = (item: CartItem) => {
+    setCart([...cart, item]);
+  };
+
+  const calculateTotal = () => {
+    return cart.reduce(
+      (total, item) => total + item.product.Price * item.quantity,
+      0,
+    );
+  };
+
+  const removeFromCart = (itemToRemove: CartItem) => {
+    setCart(cart.filter((item) => item !== itemToRemove));
+  };
+
+  const updateQuantity = (itemToUpdate: CartItem, quantity: number) => {
+    setCart(
+      cart.map((item) =>
+        item === itemToUpdate ? { ...itemToUpdate, quantity } : item,
+      ),
+    );
+  };
 
   if (error) {
     // Handle the error here
@@ -78,10 +257,15 @@ export default function Home() {
   const typedProducts = products as Product[];
 
   return (
-    <div className="max-w-sm mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-3xl m-5">
+    <div className="min-h-screen bg-gradient-to-b from-gray-dark to-gray-light">
       {typedProducts.map((product) => (
-        <ProductCard key={product.Id} product={product} />
+        <ProductCard key={product.Id} product={product} addToCart={addToCart} />
       ))}
+      <Cart
+        cart={cart}
+        removeFromCart={removeFromCart}
+        updateQuantity={updateQuantity}
+      />
     </div>
-  )
+  );
 }
