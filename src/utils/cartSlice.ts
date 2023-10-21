@@ -1,0 +1,58 @@
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+// Define a type for the cart item
+interface CartItem {
+  product: Product;
+  colour: Colour;
+  size: Size;
+  quantity: number;
+}
+
+// Load the initial state from local storage
+const initialState: CartItem[] = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('cart') || '[]') : [];
+
+export const cartSlice = createSlice({
+  name: 'cart',
+  initialState,
+  reducers: {
+    addToCart: (state, action: PayloadAction<CartItem>) => {
+      // Check if the item already exists in the cart
+      const existingItem = state.find(item => item.product.Id === action.payload.product.Id && item.colour === action.payload.colour && item.size === action.payload.size);
+      if (existingItem) {
+        // If the item exists, update the quantity
+        existingItem.quantity += action.payload.quantity;
+      } else {
+        // If the item doesn't exist, add it to the cart
+        state.push(action.payload);
+      }
+      // Update local storage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('cart', JSON.stringify(state));
+      }
+    },
+    
+    removeFromCart: (state, action: PayloadAction<number>) => {
+      const newState = state.filter((item, index) => index !== action.payload);
+      // Update local storage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('cart', JSON.stringify(newState));
+      }
+      return newState;
+    },
+
+    updateQuantity: (state, action: PayloadAction<{ indexToUpdate: number; quantity: number }>) => {
+      const newState = state.map((item, index) =>
+        index === action.payload.indexToUpdate ? { ...item, quantity: action.payload.quantity } : item,
+      );
+      // Update local storage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('cart', JSON.stringify(newState));
+      }
+      return newState;
+    },
+  },
+});
+
+export const { addToCart, removeFromCart, updateQuantity } = cartSlice.actions;
+
+export default cartSlice.reducer;
