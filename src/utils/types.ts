@@ -22,7 +22,7 @@ type Product = {
   Colours: Colour[];
 };
 
-interface CartItem {
+type CartItem = {
   product: Product;
   colour: Colour;
   size: Size;

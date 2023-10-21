@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router"; // import your types
+// import { useRouter } from "next/router"; // import your types
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../store/cartStore";
+import type { RootState } from "../store/cartStore";
+import Image from "next/image";
 import { removeFromCart, updateQuantity } from "../utils/cartSlice";
-
-interface CheckoutProps {
-  cart: CartItem[];
-}
 
 const Checkout: React.FC = () => {
   const dispatch = useDispatch();
@@ -26,22 +23,22 @@ const Checkout: React.FC = () => {
   };
   
 
-  const [name, setName] = useState("");
-  const [address, setAddress] = useState("");
-  const router = useRouter();
+  // const [name, setName] = useState("");
+  // const [address, setAddress] = useState("");
+  //const router = useRouter();
 
-  const handleCheckout = (event: React.FormEvent) => {
-    event.preventDefault();
+  // const handleCheckout = (event: React.FormEvent) => {
+  //   event.preventDefault();
 
-    // Log the order information and cart items to the console
-    console.log("Order placed successfully!");
-    console.log("Name:", name);
-    console.log("Address:", address);
-    console.log("Cart items:", cart);
+  //   // Log the order information and cart items to the console
+  //   console.log("Order placed successfully!");
+  //   console.log("Name:", name);
+  //   console.log("Address:", address);
+  //   console.log("Cart items:", cart);
 
-    // Redirect to home page after successful checkout
-    router.push("/");
-  };
+  //   // Redirect to home page after successful checkout
+  //   router.push("/");
+  // };
 
   if (!isClient) {
     return <div>Loading...</div>; // or return null or some loading spinner
@@ -87,7 +84,7 @@ const Checkout: React.FC = () => {
                   key={index}
                   className="flex items-start space-x-4 py-6"
                 >
-                  <img
+                  <Image
                     src={item.colour.Image}
                     alt={item.colour.Name}
                     className="h-20 w-20 flex-none rounded-md object-cover object-center"

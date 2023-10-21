@@ -1,15 +1,11 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-// Define a type for the cart item
-interface CartItem {
-  product: Product;
-  colour: Colour;
-  size: Size;
-  quantity: number;
-}
+import { createSlice } from '@reduxjs/toolkit';
+import type {PayloadAction} from '@reduxjs/toolkit';
 
 // Load the initial state from local storage
-const initialState: CartItem[] = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('cart') || '[]') : [];
+const initialState: CartItem[] = typeof window !== 'undefined' 
+    ? (JSON.parse(localStorage.getItem('cart') ?? '[]') as CartItem[]) 
+    : [] as CartItem[];
+
 
 export const cartSlice = createSlice({
   name: 'cart',
@@ -30,7 +26,7 @@ export const cartSlice = createSlice({
         localStorage.setItem('cart', JSON.stringify(state));
       }
     },
-    
+
     removeFromCart: (state, action: PayloadAction<number>) => {
       const newState = state.filter((item, index) => index !== action.payload);
       // Update local storage

@@ -2,9 +2,8 @@ import { api } from "~/utils/api";
 import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
-import { useDispatch, useSelector } from "react-redux";
-import { addToCart,  removeFromCart, updateQuantity } from "../utils/cartSlice"; // import the action
-import { RootState } from "../store/cartStore"; // import RootState
+import { useDispatch } from "react-redux";
+import { addToCart } from "../utils/cartSlice"; // import the action
 
 function ProductCard({
   product,
@@ -113,7 +112,7 @@ function ProductCard({
 export default function Home() {
   const { data: products, error } = api.example.getAll.useQuery();
   const dispatch = useDispatch();
-  const cart = useSelector((state: RootState) => state.cart);
+  //const cart = useSelector((state: RootState) => state.cart);
 
   const handleAddToCart = (item: CartItem) => {
     dispatch(addToCart(item));
