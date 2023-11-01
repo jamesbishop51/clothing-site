@@ -28,3 +28,9 @@ type CartItem = {
   size: Size;
   quantity: number;
 }
+
+interface FormData {
+  city: string;
+  state: string;
+  postalCode: string;
+}

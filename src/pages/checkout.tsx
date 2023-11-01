@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 // import { useRouter } from "next/router"; // import your types
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../store/cartStore";
@@ -7,9 +7,25 @@ import { removeFromCart, updateQuantity } from "../utils/cartSlice";
 
 const Checkout: React.FC = () => {
   const dispatch = useDispatch();
+  const formRef = useRef<HTMLFormElement | null>(null);
   const cart = useSelector((state: RootState) => state.cart);
 
   const [isClient, setIsClient] = useState(false);
+  const [email, setEmail] = useState("");
+  const [shippingAddress, setShippingAddress] = useState({
+    address: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const [formData, setFormData] = useState({
+    city: "",
+    state: "",
+    postalCode: "",
+  });
+
+  const { address } = shippingAddress;
 
   useEffect(() => {
     setIsClient(true);
@@ -17,36 +33,90 @@ const Checkout: React.FC = () => {
   const handleRemoveFromCart = (index: number) => {
     dispatch(removeFromCart(index));
   };
-  
+
   const handleUpdateQuantity = (index: number, quantity: number) => {
     dispatch(updateQuantity({ indexToUpdate: index, quantity }));
   };
-  
 
-  // const [name, setName] = useState("");
-  // const [address, setAddress] = useState("");
-  //const router = useRouter();
+  const subtotal = cart.reduce(
+    (acc, item) => acc + item.product.Price * item.quantity,
+    0,
+  );
+  const shipping = 6;
 
-  // const handleCheckout = (event: React.FormEvent) => {
-  //   event.preventDefault();
+  const total = subtotal + shipping;
 
-  //   // Log the order information and cart items to the console
-  //   console.log("Order placed successfully!");
-  //   console.log("Name:", name);
-  //   console.log("Address:", address);
-  //   console.log("Cart items:", cart);
-
-  //   // Redirect to home page after successful checkout
-  //   router.push("/");
-  // };
+  const isCartEmpty = cart.length === 0;
+  const isEmailValid = email.trim() !== "";
 
   if (!isClient) {
     return <div>Loading...</div>; // or return null or some loading spinner
   }
 
+  // Event handler to capture the email input
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    // Implement email validation logic here and update isEmailValid
+  };
+
+  const handleShippingAddressChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const { name, value } = e.target;
+    setShippingAddress({
+      ...shippingAddress,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    setIsLoading(true);
+    setIsError(false);
+    setIsSuccess(false);
+
+    if (formRef.current) {
+      // Access form data using the formRef
+      const formData = new FormData(formRef.current);
+
+      // Log the email and shipping info
+
+      const data = {
+        total,
+        cart,
+        email: formData.get("email-address"),
+        address: formData.get("address"),
+        city: formData.get("city"),
+        state: formData.get("state"),
+        postalCode: formData.get("postalCode"),
+      };
+
+      try {
+        const response = await fetch('/api/send', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data), // Send data as JSON
+        });
+    
+        if (!response.ok) {
+          throw new Error('Email sending failed');
+        }
+    
+        setIsSuccess(true);
+      } catch (error) {
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
   return (
     <div className="bg-white">
-      {/* Background color split screen for large screens */}
       <div
         className="fixed left-0 top-0 hidden h-full w-1/2 bg-white lg:block"
         aria-hidden="true"
@@ -68,23 +138,15 @@ const Checkout: React.FC = () => {
               Order summary
             </h2>
 
-            <dl>
-              <dt className="text-sm font-medium">Amount due</dt>
-              <dd className="mt-1 text-3xl font-bold tracking-tight text-white">
-                $232.00
-              </dd>
-            </dl>
-
             <ul
               role="list"
               className="divide-y divide-white divide-opacity-10 text-sm font-medium"
             >
               {cart.map((item: CartItem, index) => (
-                <li
-                  key={index}
-                  className="flex items-start space-x-4 py-6"
-                >
+                <li key={index} className="flex items-start space-x-4 py-6">
                   <Image
+                    width={500}
+                    height={500}
                     src={item.colour.Image}
                     alt={item.colour.Name}
                     className="h-20 w-20 flex-none rounded-md object-cover object-center"
@@ -117,22 +179,17 @@ const Checkout: React.FC = () => {
             <dl className="space-y-6 border-t border-white border-opacity-10 pt-6 text-sm font-medium">
               <div className="flex items-center justify-between">
                 <dt>Subtotal</dt>
-                <dd>$570.00</dd>
+                <dd>${subtotal.toFixed(2)}</dd>
               </div>
 
               <div className="flex items-center justify-between">
                 <dt>Shipping</dt>
-                <dd>$25.00</dd>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <dt>Taxes</dt>
-                <dd>$47.60</dd>
+                <dd>${shipping.toFixed(2)}</dd>
               </div>
 
               <div className="flex items-center justify-between border-t border-white border-opacity-10 pt-6 text-white">
                 <dt className="text-base">Total</dt>
-                <dd className="text-base">$642.60</dd>
+                <dd className="text-base">${total.toFixed(2)}</dd>
               </div>
             </dl>
           </div>
@@ -143,10 +200,9 @@ const Checkout: React.FC = () => {
           className="py-16 lg:col-start-1 lg:row-start-1 lg:mx-auto lg:w-full lg:max-w-lg lg:pb-24 lg:pt-0"
         >
           <h2 id="payment-and-shipping-heading" className="sr-only">
-            Payment and shipping details
+            shipping details
           </h2>
-
-          <form>
+          <form ref={formRef} onSubmit={handleSubmit}>
             <div className="mx-auto max-w-2xl px-4 lg:max-w-none lg:px-0">
               <div>
                 <h3
@@ -170,69 +226,9 @@ const Checkout: React.FC = () => {
                       name="email-address"
                       autoComplete="email"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      value={email}
+                      onChange={handleEmailChange}
                     />
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-10">
-                <h3 className="text-lg font-medium text-gray-900">
-                  Payment details
-                </h3>
-
-                <div className="mt-6 grid grid-cols-3 gap-x-4 gap-y-6 sm:grid-cols-4">
-                  <div className="col-span-3 sm:col-span-4">
-                    <label
-                      htmlFor="card-number"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Card number
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        type="text"
-                        id="card-number"
-                        name="card-number"
-                        autoComplete="cc-number"
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-span-2 sm:col-span-3">
-                    <label
-                      htmlFor="expiration-date"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Expiration date (MM/YY)
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        type="text"
-                        name="expiration-date"
-                        id="expiration-date"
-                        autoComplete="cc-exp"
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="cvc"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      CVC
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        type="text"
-                        name="cvc"
-                        id="cvc"
-                        autoComplete="csc"
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      />
-                    </div>
                   </div>
                 </div>
               </div>
@@ -255,8 +251,10 @@ const Checkout: React.FC = () => {
                         type="text"
                         id="address"
                         name="address"
-                        autoComplete="street-address"
+                        autoComplete="address"
                         className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        value={address}
+                        onChange={handleShippingAddressChange}
                       />
                     </div>
                   </div>
@@ -268,15 +266,17 @@ const Checkout: React.FC = () => {
                     >
                       City
                     </label>
-                    <div className="mt-1">
-                      <input
-                        type="text"
-                        id="city"
-                        name="city"
-                        autoComplete="address-level2"
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      />
-                    </div>
+                    <input
+                      type="text"
+                      id="city"
+                      name="city"
+                      autoComplete="address-level2"
+                      value={formData.city}
+                      onChange={(e) =>
+                        setFormData({ ...formData, city: e.target.value })
+                      }
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    />
                   </div>
 
                   <div>
@@ -289,10 +289,14 @@ const Checkout: React.FC = () => {
                     <div className="mt-1">
                       <input
                         type="text"
-                        id="region"
-                        name="region"
-                        autoComplete="address-level1"
+                        id="state"
+                        name="state"
+                        autoComplete="state"
                         className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        value={formData.state}
+                        onChange={(e) =>
+                          setFormData({ ...formData, state: e.target.value })
+                        }
                       />
                     </div>
                   </div>
@@ -307,115 +311,46 @@ const Checkout: React.FC = () => {
                     <div className="mt-1">
                       <input
                         type="text"
-                        id="postal-code"
-                        name="postal-code"
-                        autoComplete="postal-code"
+                        id="postalCode"
+                        name="postalCode"
+                        autoComplete="postalCode"
                         className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        value={formData.postalCode}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            postalCode: e.target.value,
+                          })
+                        }
                       />
                     </div>
                   </div>
                 </div>
               </div>
-
-              <div className="mt-10">
-                <h3 className="text-lg font-medium text-gray-900">
-                  Billing information
-                </h3>
-
-                <div className="mt-6 flex items-center">
-                  <input
-                    id="same-as-shipping"
-                    name="same-as-shipping"
-                    type="checkbox"
-                    defaultChecked
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <div className="ml-2">
-                    <label
-                      htmlFor="same-as-shipping"
-                      className="text-sm font-medium text-gray-900"
-                    >
-                      Same as shipping information
-                    </label>
-                  </div>
-                </div>
-              </div>
-
               <div className="mt-10 flex justify-end border-t border-gray-200 pt-6">
-                <button
-                  type="submit"
-                  className="rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
-                >
-                  Pay now
-                </button>
+                {/* Conditional rendering for the "Confirm Order" button */}
+                {isEmailValid && !isCartEmpty && address ? (
+                  <button
+                    type="submit"
+                    className="rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+                  >
+                    Confirm Order
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    disabled
+                    className="cursor-not-allowed rounded-md border border-gray-300 bg-gray-300 px-4 py-2 text-sm font-medium text-gray-500"
+                  >
+                    Confirm Order
+                  </button>
+                )}
               </div>
             </div>
           </form>
         </section>
       </div>
     </div>
-
-    // <div className="flex min-h-screen flex-col items-center justify-center py-2">
-    //   <h1 className="mb-4 text-2xl font-bold">Checkout</h1>
-
-    //   {/* List cart items */}
-    //   {cart.map((item: CartItem) => (
-    //     <div
-    //       key={item.product.Id}
-    //       className="mb-2 flex w-full max-w-md items-center justify-between rounded bg-white p-4 shadow"
-    //     >
-    //       <div>
-    //         <h2 className="text-lg font-bold">{item.product.Name}</h2>
-    //         <p className="text-gray-500">
-    //           {item.quantity} x {item.product.Price}
-    //         </p>
-    //       </div>
-    //       <div className="flex items-center">
-    //         <input
-    //           type="number"
-    //           min="1"
-    //           value={item.quantity}
-    //           onChange={(e) =>
-    //             handleUpdateQuantity(item, Number(e.target.value))
-    //           }
-    //           className="mr-2 w-16 rounded-md border text-center"
-    //         />
-    //         <button
-    //           onClick={() => handleRemoveFromCart(item)}
-    //           className="rounded-md bg-red-500 px-2 py-1 text-white"
-    //         >
-    //           Remove
-    //         </button>
-    //       </div>
-    //     </div>
-    //   ))}
-
-    //   {/* Checkout form */}
-    //   <form onSubmit={handleCheckout}>
-    //     <label>
-    //       Name:
-    //       <input
-    //         type="text"
-    //         value={name}
-    //         onChange={(e) => setName(e.target.value)}
-    //         required
-    //       />
-    //     </label>
-
-    //     <label>
-    //       Address:
-    //       <input
-    //         type="text"
-    //         value={address}
-    //         onChange={(e) => setAddress(e.target.value)}
-    //         required
-    //       />
-    //     </label>
-
-    //     <button type="submit">Place order</button>
-    //   </form>
-    // </div>
   );
 };
-
 export default Checkout;

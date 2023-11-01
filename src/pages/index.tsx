@@ -23,7 +23,7 @@ function ProductCard({
   return (
     <div
       key={product.Id}
-      className="m-5 mx-auto max-w-sm overflow-hidden rounded-xl bg-white shadow-md md:max-w-3xl"
+      className="mb-5 mx-auto max-w-sm overflow-hidden rounded-xl bg-white shadow-md md:max-w-3xl"
     >
       <div key={product.Id} className="md:flex">
         <div className="md:flex-shrink-0">
@@ -141,7 +141,6 @@ export default function Home() {
         addToCart={handleAddToCart}
       />
       ))}
-      <Link href="/checkout">Go to Checkout</Link>
     </div>
   );
 }
