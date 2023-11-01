@@ -22,7 +22,7 @@ function ProductCard({
   return (
     <div
       key={product.Id}
-      className="mb-5 mx-auto max-w-sm overflow-hidden rounded-xl bg-white shadow-md md:max-w-3xl"
+      className="mx-auto mb-5 max-w-sm overflow-hidden rounded-xl bg-white shadow-md md:max-w-3xl"
     >
       <div key={product.Id} className="md:flex">
         <div className="md:flex-shrink-0">
@@ -38,7 +38,7 @@ function ProductCard({
           <div className="text-sm font-semibold uppercase tracking-wide text-slate-700">
             {product.Name}
           </div>
-          <div className="flex space-x-4">
+          <div className="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
             <select
               className="mt-2 rounded-md border border-transparent bg-slate-600 px-4 py-2 text-base font-medium text-white hover:bg-slate-700"
               value={selectedColour.Id}
@@ -135,10 +135,10 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-b from-gray-dark to-gray-light">
       {typedProducts.map((product) => (
         <ProductCard
-        key={product.Id}
-        product={product}
-        addToCart={handleAddToCart}
-      />
+          key={product.Id}
+          product={product}
+          addToCart={handleAddToCart}
+        />
       ))}
     </div>
   );
