@@ -1,11 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { FaShoppingCart } from "react-icons/fa";
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from "~/store/cartStore";
+import { setCart } from "~/utils/cartSlice";
 
 const CartButton = () => {
+  const dispatch = useDispatch();
   const cart = useSelector((state: RootState) => state.cart);
+  const [hasMounted, setHasMounted] = useState(false);
+
+
+  
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  if (!hasMounted) {
+    return null;
+  }
+  
   const itemCount = cart.reduce((count, item) => count + item.quantity, 0);
 
   return (

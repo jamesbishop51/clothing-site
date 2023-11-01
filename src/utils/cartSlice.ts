@@ -11,6 +11,9 @@ export const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
+    setCart: (state, action: PayloadAction<CartItem[]>) => {
+      return action.payload;
+    },
     addToCart: (state, action: PayloadAction<CartItem>) => {
       // Check if the item already exists in the cart
       const existingItem = state.find(
@@ -59,6 +62,6 @@ export const cartSlice = createSlice({
   },
 });
 
-export const { addToCart, removeFromCart, updateQuantity } = cartSlice.actions;
+export const { addToCart, removeFromCart, updateQuantity, setCart } = cartSlice.actions;
 
 export default cartSlice.reducer;

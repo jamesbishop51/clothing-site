@@ -18,7 +18,7 @@ const config = {
     defaultLocale: "en",
   },
   images: {
-    domains: ["drive.google.com"],
+    domains: ["drive.google.com", "imgur.com", "i.imgur.com"],
   },
 };
 
