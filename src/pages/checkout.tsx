@@ -179,17 +179,17 @@ const Checkout: React.FC = () => {
             <dl className="space-y-6 border-t border-white border-opacity-10 pt-6 text-sm font-medium">
               <div className="flex items-center justify-between">
                 <dt>Subtotal</dt>
-                <dd>${subtotal.toFixed(2)}</dd>
+                <dd>€{subtotal.toFixed(2)}</dd>
               </div>
 
               <div className="flex items-center justify-between">
                 <dt>Shipping</dt>
-                <dd>${shipping.toFixed(2)}</dd>
+                <dd>€{shipping.toFixed(2)}</dd>
               </div>
 
               <div className="flex items-center justify-between border-t border-white border-opacity-10 pt-6 text-white">
                 <dt className="text-base">Total</dt>
-                <dd className="text-base">${total.toFixed(2)}</dd>
+                <dd className="text-base">€{total.toFixed(2)}</dd>
               </div>
             </dl>
           </div>

@@ -1,15 +1,19 @@
 import React from "react";
 import Link from "next/link";
 import { FaShoppingCart } from "react-icons/fa";
+import { useSelector } from 'react-redux';
+import { RootState } from "~/store/cartStore";
 
 const CartButton = () => {
+  const cart = useSelector((state: RootState) => state.cart);
+  const itemCount = cart.reduce((count, item) => count + item.quantity, 0);
+
   return (
-    <Link
-      className="flex items-center rounded bg-blue-500 p-2 text-white"
-      href="/checkout"
-    >
-      <span className="mr-2">Cart</span>
-      <FaShoppingCart size={30} />
+    <Link href="/checkout" className="flex items-center rounded bg-blue-500 p-2 text-white">
+      
+        <span className="mr-2">Cart ({itemCount})</span>
+        <FaShoppingCart size={30} />
+      
     </Link>
   );
 };
