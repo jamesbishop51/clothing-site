@@ -6,13 +6,6 @@ const initialState: CartItem[] = typeof window !== 'undefined'
     ? (JSON.parse(localStorage.getItem('cart') ?? '[]') as CartItem[]) 
     : [] as CartItem[];
 
-
-    // Define a helper function to calculate subtotal
-const calculateSubtotal = (cart: CartItem[]) => {
-  return cart.reduce((acc, item) => acc + item.product.Price * item.quantity, 0);
-};
-
-
 export const cartSlice = createSlice({
   name: 'cart',
   initialState,

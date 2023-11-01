@@ -1,7 +1,6 @@
 import { api } from "~/utils/api";
 import Image from "next/image";
 import { useState } from "react";
-import Link from "next/link";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../utils/cartSlice"; // import the action
 
