@@ -26,6 +26,7 @@ const config = {
     "@typescript-eslint/no-unused-vars": 'off',
     "@typescript-eslint/no-misused-promises": 'off',
     "@typescript-eslint/no-unsafe-assignment": 'off',
+    "@typescript-eslint/no-floating-promises": 'off',
   },
 };
 
