@@ -111,7 +111,7 @@ const Checkout: React.FC = () => {
         }
 
         dispatch(clearCart());
-        router.push('/');
+        router.push("/");
 
         setIsSuccess(true);
       } catch (error) {

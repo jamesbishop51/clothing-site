@@ -27,4 +27,4 @@ type CartItem = {
   colour: Colour;
   size: Size;
   quantity: number;
-}
+};
