@@ -2,6 +2,7 @@ import * as React from "react";
 
 interface EmailTemplateProps {
   firstName: string;
+  lastName: string;
   total: number;
   cart: Array<{
     product: {
@@ -22,6 +23,7 @@ interface EmailTemplateProps {
 
 export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
   firstName,
+  lastName,
   total,
   cart,
   email,
@@ -31,24 +33,37 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
   postalCode,
 }) => (
   <div>
-    <h1>Welcome, {firstName}!</h1>
+    <h1>Order for: {firstName} {lastName}</h1>
     <h2>Your Order:</h2>
     <p>Total Price: {total}</p>
     <h3>Cart Items:</h3>
-    {cart.map((item, index) => (
-      <div key={index}>
-        <p>Item {index + 1}:</p>
-        <p>Product Code: {item.product.code}</p>
-        <p>Product Color Name: {item.colour.Name}</p>
-        <p>Quantity: {item.quantity}</p>
-        <p>Total Price: {item.product.Price * item.quantity}</p>
-      </div>
-    ))}
+    <table style={{width:"100%", textAlign:"center", border:"1px solid black"}}>
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Product Code</th>
+          <th>Colour</th>
+          <th>Quantity</th>
+          <th>Total Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {cart.map((item, index) => (
+          <tr key={index}>
+            <td>{index + 1}</td>
+            <td>{item.product.code}</td>
+            <td>{item.colour.Name}</td>
+            <td>{item.quantity}</td>
+            <td>{item.product.Price * item.quantity}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
     <h3>Shipping Info:</h3>
+    <p>Name: {firstName} {lastName}</p>
     <p>Email: {email}</p>
     <p>Shipping Address: {address}</p>
     <p>City: {city}</p>
     <p>State/Province: {state}</p>
     <p>Postal Code: {postalCode}</p>
-  </div>
-);
+  </div>);

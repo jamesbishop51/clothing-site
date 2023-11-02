@@ -35,6 +35,14 @@ export const cartSlice = createSlice({
       }
     },
 
+    clearCart: (state) => {
+      // Clear local storage
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("cart");
+      }
+      return []; // Return an empty array to clear the cart
+    },
+
     removeFromCart: (state, action: PayloadAction<number>) => {
       const newState = state.filter((item, index) => index !== action.payload);
       // Update local storage
@@ -62,6 +70,6 @@ export const cartSlice = createSlice({
   },
 });
 
-export const { addToCart, removeFromCart, updateQuantity, setCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, updateQuantity, setCart, clearCart } = cartSlice.actions;
 
 export default cartSlice.reducer;

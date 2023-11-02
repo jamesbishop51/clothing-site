@@ -1,12 +1,13 @@
 import { useEffect, useState, useRef } from "react";
-// import { useRouter } from "next/router"; // import your types
+import { useRouter } from "next/router"; // import your types
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../store/cartStore";
 import Image from "next/image";
-import { removeFromCart, updateQuantity } from "../utils/cartSlice";
+import { removeFromCart, updateQuantity, clearCart } from "../utils/cartSlice";
 
 const Checkout: React.FC = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
   const formRef = useRef<HTMLFormElement | null>(null);
   const cart = useSelector((state: RootState) => state.cart);
 
@@ -20,6 +21,8 @@ const Checkout: React.FC = () => {
   const [isSuccess, setIsSuccess] = useState(false);
 
   const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
     city: "",
     state: "",
     postalCode: "",
@@ -50,14 +53,13 @@ const Checkout: React.FC = () => {
   const isEmailValid = email.trim() !== "";
 
   if (!isClient) {
-    return <div>Loading...</div>; // or return null or some loading spinner
+    return <div>Loading...</div>;
   }
 
   // Event handler to capture the email input
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value;
     setEmail(newEmail);
-    // Implement email validation logic here and update isEmailValid
   };
 
   const handleShippingAddressChange = (
@@ -87,6 +89,8 @@ const Checkout: React.FC = () => {
         total,
         cart,
         email: formData.get("email-address"),
+        firstName: formData.get("first-name"), // Capture first name
+        lastName: formData.get("last-name"), // Capture last name
         address: formData.get("address"),
         city: formData.get("city"),
         state: formData.get("state"),
@@ -94,18 +98,21 @@ const Checkout: React.FC = () => {
       };
 
       try {
-        const response = await fetch('/api/send', {
-          method: 'POST',
+        const response = await fetch("/api/send", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(data), // Send data as JSON
         });
-    
+
         if (!response.ok) {
-          throw new Error('Email sending failed');
+          throw new Error("Email sending failed");
         }
-    
+
+        dispatch(clearCart());
+        router.push('/');
+
         setIsSuccess(true);
       } catch (error) {
         setIsError(true);
@@ -143,16 +150,18 @@ const Checkout: React.FC = () => {
               className="divide-y divide-white divide-opacity-10 text-sm font-medium"
             >
               {cart.map((item: CartItem, index) => (
-                <li key={index} className="flex items-start space-x-4 py-6">
+                <li key={index} className="flex items-start space-x-5 py-6">
                   <Image
                     width={500}
                     height={500}
                     src={item.colour.Image}
                     alt={item.colour.Name}
-                    className="h-20 w-20 flex-none rounded-md object-cover object-center"
+                    className="h-28 w-28 flex-none rounded-md object-cover object-center"
                   />
                   <div className="flex-auto space-y-1">
                     <h3 className="text-white">{item.product.Name}</h3>
+                    <p className="text-white">Size: {item.size.Size}</p>
+                    <p className="text-white">Colour: {item.colour.Name}</p>
                     <div>
                       <input
                         type="number"
@@ -229,6 +238,54 @@ const Checkout: React.FC = () => {
                       value={email}
                       onChange={handleEmailChange}
                     />
+                  </div>
+                </div>
+                <div className="mt-6 sm:flex">
+                  <div className="w-full sm:w-1/2 sm:pr-2">
+                    <label
+                      htmlFor="first-name"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      First Name
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        type="text"
+                        id="first-name"
+                        name="first-name"
+                        autoComplete="given-name"
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        value={formData.firstName}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            firstName: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div className="w-full sm:w-1/2 sm:pl-2">
+                    <label
+                      htmlFor="last-name"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Last Name
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        type="text"
+                        id="last-name"
+                        name="last-name"
+                        autoComplete="family-name"
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        value={formData.lastName}
+                        onChange={(e) =>
+                          setFormData({ ...formData, lastName: e.target.value })
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

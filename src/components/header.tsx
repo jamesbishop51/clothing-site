@@ -1,6 +1,7 @@
 import React from "react";
 import CartButton from "./CartButton";
 import Image from "next/image";
+import Link from "next/link";
 
 const Header = () => {
   return (
@@ -8,7 +9,9 @@ const Header = () => {
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center">
           <Image src="/logo.png" alt="Logo" width={50} height={50} />
-          <h1 className="ml-2 text-2xl font-bold">Matthew sucks</h1>
+          <Link href="/">
+            <h1 className="ml-2 text-2xl font-bold">Matthew sucks</h1>
+          </Link>
         </div>
         <div className="flex items-center">
           <CartButton />
