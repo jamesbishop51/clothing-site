@@ -10,7 +10,7 @@ const Header = () => {
         <div className="flex items-center">
           <Image src="/logo.png" alt="Logo" width={50} height={50} />
           <Link href="/">
-            <h1 className="ml-2 text-2xl font-bold">Matthew sucks</h1>
+            <h1 className="ml-2 text-2xl font-bold">Wild West Stitchery</h1>
           </Link>
         </div>
         <div className="flex items-center">
