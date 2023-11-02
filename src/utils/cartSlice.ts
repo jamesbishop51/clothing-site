@@ -40,7 +40,7 @@ export const cartSlice = createSlice({
       if (typeof window !== "undefined") {
         localStorage.removeItem("cart");
       }
-      return []; // Return an empty array to clear the cart
+      return [];
     },
 
     removeFromCart: (state, action: PayloadAction<number>) => {

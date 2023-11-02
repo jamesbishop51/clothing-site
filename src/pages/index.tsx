@@ -2,7 +2,7 @@ import { api } from "~/utils/api";
 import Image from "next/image";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../utils/cartSlice"; // import the action
+import { addToCart } from "../utils/cartSlice";
 
 function ProductCard({
   product,
@@ -16,7 +16,7 @@ function ProductCard({
   const [selectedQuantity, setSelectedQuantity] = useState(1);
 
   if (!selectedColour || !selectedSize) {
-    return null; // or some fallback UI
+    return null;
   }
 
   return (
@@ -111,7 +111,6 @@ function ProductCard({
 export default function Home() {
   const { data: products, error } = api.example.getAll.useQuery();
   const dispatch = useDispatch();
-  //const cart = useSelector((state: RootState) => state.cart);
 
   const handleAddToCart = (item: CartItem) => {
     dispatch(addToCart(item));

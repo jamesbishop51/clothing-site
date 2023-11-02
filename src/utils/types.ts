@@ -10,7 +10,7 @@ type Colour = {
   Name: string;
   Image: string;
   ProductId: number;
-  Size: Size[]; // You might need to update this if the actual field name is different
+  Size: Size[];
 };
 
 type Product = {

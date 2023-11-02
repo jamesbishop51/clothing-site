@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useRouter } from "next/router"; // import your types
+import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../store/cartStore";
 import Image from "next/image";
@@ -89,8 +89,8 @@ const Checkout: React.FC = () => {
         total,
         cart,
         email: formData.get("email-address"),
-        firstName: formData.get("first-name"), // Capture first name
-        lastName: formData.get("last-name"), // Capture last name
+        firstName: formData.get("first-name"),
+        lastName: formData.get("last-name"),
         address: formData.get("address"),
         city: formData.get("city"),
         state: formData.get("state"),
@@ -103,7 +103,7 @@ const Checkout: React.FC = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(data), // Send data as JSON
+          body: JSON.stringify(data),
         });
 
         if (!response.ok) {
@@ -180,7 +180,6 @@ const Checkout: React.FC = () => {
                       </button>
                     </div>
                   </div>
-                  {/* <p className="flex-none text-base font-medium text-white">{product.price}</p> */}
                 </li>
               ))}
             </ul>
@@ -385,7 +384,6 @@ const Checkout: React.FC = () => {
                 </div>
               </div>
               <div className="mt-10 flex justify-end border-t border-gray-200 pt-6">
-                {/* Conditional rendering for the "Confirm Order" button */}
                 {isEmailValid && !isCartEmpty && address ? (
                   <button
                     type="submit"

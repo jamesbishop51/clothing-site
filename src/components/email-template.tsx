@@ -33,11 +33,15 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
   postalCode,
 }) => (
   <div>
-    <h1>Order for: {firstName} {lastName}</h1>
+    <h1>
+      Order for: {firstName} {lastName}
+    </h1>
     <h2>Your Order:</h2>
     <p>Total Price: {total}</p>
     <h3>Cart Items:</h3>
-    <table style={{width:"100%", textAlign:"center", border:"1px solid black"}}>
+    <table
+      style={{ width: "100%", textAlign: "center", border: "1px solid black" }}
+    >
       <thead>
         <tr>
           <th>Item</th>
@@ -60,10 +64,13 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
       </tbody>
     </table>
     <h3>Shipping Info:</h3>
-    <p>Name: {firstName} {lastName}</p>
+    <p>
+      Name: {firstName} {lastName}
+    </p>
     <p>Email: {email}</p>
     <p>Shipping Address: {address}</p>
     <p>City: {city}</p>
     <p>State/Province: {state}</p>
     <p>Postal Code: {postalCode}</p>
-  </div>);
+  </div>
+);
