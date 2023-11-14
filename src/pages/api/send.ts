@@ -9,6 +9,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     total,
     cart,
     email,
+    phoneNumber,
     address,
     city,
     state,
@@ -25,6 +26,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       react: EmailTemplate({
         firstName,
         lastName,
+        phoneNumber,
         total,
         cart,
         email,

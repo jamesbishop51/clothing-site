@@ -18,6 +18,7 @@ interface EmailTemplateProps {
   address: string;
   city: string;
   state: string;
+  phoneNumber: string;
   postalCode: string;
 }
 
@@ -26,6 +27,7 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
   lastName,
   total,
   cart,
+  phoneNumber,
   email,
   address,
   city,
@@ -67,10 +69,11 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
     <p>
       Name: {firstName} {lastName}
     </p>
-    <p>Email: {email}</p>
+    <p>Email: {email}</p> 
+    <p>Phone Number: {phoneNumber}</p>
     <p>Shipping Address: {address}</p>
     <p>City: {city}</p>
-    <p>State/Province: {state}</p>
+    <p>County: {state}</p>
     <p>Postal Code: {postalCode}</p>
   </div>
 );

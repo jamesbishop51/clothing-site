@@ -26,6 +26,7 @@ const Checkout: React.FC = () => {
     city: "",
     state: "",
     postalCode: "",
+    phoneNumber: "",
   });
 
   const { address } = shippingAddress;
@@ -95,6 +96,7 @@ const Checkout: React.FC = () => {
         city: formData.get("city"),
         state: formData.get("state"),
         postalCode: formData.get("postalCode"),
+        phoneNumber: formData.get("phone-number"),
       };
 
       try {
@@ -114,6 +116,7 @@ const Checkout: React.FC = () => {
         router.push("/");
 
         setIsSuccess(true);
+        window.alert("Your invoice will be confirmed within 24 hours.");
       } catch (error) {
         setIsError(true);
       } finally {
@@ -287,6 +290,30 @@ const Checkout: React.FC = () => {
                     </div>
                   </div>
                 </div>
+                <div className="mt-6">
+                  <label
+                    htmlFor="email-address"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Phone Number
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      type="tel"
+                      id="phone-number"
+                      name="phone-number"
+                      autoComplete="tel"
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      value={formData.phoneNumber}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          phoneNumber: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="mt-10">
@@ -331,7 +358,7 @@ const Checkout: React.FC = () => {
                       onChange={(e) =>
                         setFormData({ ...formData, city: e.target.value })
                       }
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      className="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
                   </div>
 

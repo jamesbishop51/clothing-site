@@ -101,7 +101,7 @@ function ProductCard({
           <p className="mt-2 text-gray-500">{product.Description}</p>
         </div>
         <div className="flex items-center justify-between p-8">
-          <span className="font-bold text-slate-700">{product.Price}</span>
+          <span className="font-bold text-slate-700">€{product.Price}</span>
         </div>
       </div>
     </div>
