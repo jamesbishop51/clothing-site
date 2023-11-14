@@ -13,6 +13,9 @@ interface EmailTemplateProps {
       Name: string;
     };
     quantity: number;
+    size:{
+      Size: string;
+    }
   }>;
   email: string;
   address: string;
@@ -50,6 +53,7 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
           <th>Product Code</th>
           <th>Colour</th>
           <th>Quantity</th>
+          <th>Size</th>
           <th>Total Price</th>
         </tr>
       </thead>
@@ -60,6 +64,7 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
             <td>{item.product.code}</td>
             <td>{item.colour.Name}</td>
             <td>{item.quantity}</td>
+            <td>{item.size.Size}</td>
             <td>{item.product.Price * item.quantity}</td>
           </tr>
         ))}
