@@ -195,7 +195,7 @@ const Checkout: React.FC = () => {
 
               <div className="flex items-center justify-between">
                 <dt>Shipping</dt>
-                <dd>€{shipping.toFixed(2)}</dd>
+                <dd>€{shipping.toFixed(2)}(€25.00 for Uk)</dd>
               </div>
 
               <div className="flex items-center justify-between border-t border-white border-opacity-10 pt-6 text-white">
